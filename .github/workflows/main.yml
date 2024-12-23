@@ -66,15 +66,19 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           ECS_SERVICE_NAME: "service-prod"
-          ECS_CLUSTER_NAME: "fem-eci-test-prod"
+          ECS_CLUSTER_NAME: "fem-eci-jmbberube-prod"
         run: |
           #!/bin/bash
+          set -e
+          echo "Describing task definition..."
           aws ecs describe-task-definition \
-              --task-definition arn:aws:ecs:ca-central-1:575108946163:task-definition/${ECS_SERVICE_NAME}
+              --task-definition ${ECS_SERVICE_NAME}
+          echo "Updating service..."
           aws ecs update-service \
               --service ${ECS_SERVICE_NAME} \
               --cluster ${ECS_CLUSTER_NAME} \
               --force-new-deployment
+          echo "Waiting for service to stabilize..."
           aws ecs wait services-stable \
               --services ${ECS_SERVICE_NAME} \
               --cluster ${ECS_CLUSTER_NAME}
