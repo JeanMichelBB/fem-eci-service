@@ -51,7 +51,8 @@ jobs:
               echo "Updating AWS SSM: ${key}=$value"
               aws ssm put-parameter --name /${ECS_SERVICE_NAME}/$key --value $value --overwrite --type String
           done < "configs/${BRANCH_NAME}.conf"
-
+          
+      
   restart:
     needs: [build-push-docker, update-ssm]
     runs-on: ubuntu-latest
